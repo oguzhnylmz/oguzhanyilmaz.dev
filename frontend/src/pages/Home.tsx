@@ -9,6 +9,10 @@ import Snapshot from "../components/snapshot/Snapshot";
 
 //import ProjectsSection from "../components/projects/ProjectsSection";
 
+import Contact from "../components/contact/Contact";
+
+import Footer from "../components/layout/Footer";
+
 function Home() {
   return (
     <main className="bg-zinc-950 text-white">
@@ -23,7 +27,11 @@ function Home() {
 
       <Journey />
 
-     
+      
+
+      <Contact />
+
+      <Footer />
 
     </main>
   );
