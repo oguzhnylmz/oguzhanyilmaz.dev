@@ -1,0 +1,45 @@
+import Container from "../ui/Container";
+import HeroContent from "./HeroContent";
+import HeroCodeCard from "./HeroCodeCard";
+
+function Hero() {
+  return (
+    <section className="relative overflow-hidden bg-zinc-950">
+
+      {/* Background Grid */}
+
+      <div
+        className="
+          absolute
+          inset-0
+          opacity-20
+          [background-image:radial-gradient(#27272a_1px,transparent_1px)]
+          [background-size:32px_32px]
+        "
+      />
+
+      <Container
+        className="
+          relative
+          flex
+          min-h-[calc(100vh-80px)]
+          flex-col
+          items-center
+          justify-center
+          gap-16
+          py-20
+          lg:flex-row
+        "
+      >
+
+        <HeroContent />
+
+        <HeroCodeCard />
+
+      </Container>
+
+    </section>
+  );
+}
+
+export default Hero;
