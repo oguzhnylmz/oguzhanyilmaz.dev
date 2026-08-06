@@ -9,7 +9,7 @@ function HeroContent() {
         Available for opportunities
       </Badge>
 
-      <h1 className="mt-8 text-5xl font-bold leading-tight text-white lg:text-7xl">
+      <h1 className="mt-8 text-5xl font-bold leading-[1.1] text-white lg:text-7xl">
 
         Building software
 
@@ -27,16 +27,33 @@ function HeroContent() {
 
       <p className="mt-8 max-w-xl text-lg leading-8 text-zinc-400">
 
-        I'm a Computer Engineer passionate about building scalable backend systems,
-        clean APIs and modern web applications.
-
-        <br />
-        <br />
-
-        Currently focused on Python, FastAPI and React while continuously improving
-        my engineering skills.
+        I build scalable backend systems and modern web
+        applications with a strong focus on clean architecture,
+        maintainability and performance.
 
       </p>
+
+      <div className="mt-8 flex flex-wrap gap-3">
+
+        <span className="rounded-full border border-zinc-800 px-4 py-2 text-sm text-zinc-300">
+
+          Python
+
+        </span>
+
+        <span className="rounded-full border border-zinc-800 px-4 py-2 text-sm text-zinc-300">
+
+          FastAPI
+
+        </span>
+
+        <span className="rounded-full border border-zinc-800 px-4 py-2 text-sm text-zinc-300">
+
+          React
+
+        </span>
+
+      </div>
 
       <HeroActions />
 
@@ -44,11 +61,11 @@ function HeroContent() {
 
         <div className="flex h-7 w-4 items-start justify-center rounded-full border border-zinc-700 p-1">
 
-          <div className="h-2 w-1 animate-bounce rounded-full bg-zinc-400" />
+          <div className="h-2 w-1 rounded-full bg-zinc-400 animate-bounce" />
 
         </div>
 
-        <span className="text-xs uppercase tracking-[0.3em] text-zinc-500">
+        <span className="text-xs uppercase tracking-[0.35em] text-zinc-500">
 
           Scroll to explore
 

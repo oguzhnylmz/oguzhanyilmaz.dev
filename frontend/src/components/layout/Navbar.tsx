@@ -3,8 +3,9 @@ import Button from "../ui/Button";
 
 function Navbar() {
   return (
-    <header className="sticky top-0 z-50 border-b border-zinc-800/70 bg-zinc-950/80 backdrop-blur-xl">
-      <Container className="flex h-20 items-center justify-between">
+    <header className="sticky top-0 z-50 border-b border-zinc-800/60 bg-zinc-950/80 backdrop-blur-xl">
+
+      <Container className="flex h-16 items-center justify-between">
 
         <a
           href="/"
@@ -14,25 +15,32 @@ function Navbar() {
           <span className="text-emerald-300">_</span>
         </a>
 
-        <nav className="hidden items-center gap-10 text-sm md:flex">
+        <nav className="hidden items-center gap-10 md:flex">
 
           <a
             href="#about"
-            className="text-zinc-400 transition hover:text-white"
+            className="text-sm text-zinc-400 transition hover:text-white"
           >
             About
           </a>
 
           <a
+            href="#journey"
+            className="text-sm text-zinc-400 transition hover:text-white"
+          >
+            Journey
+          </a>
+
+          <a
             href="#projects"
-            className="text-zinc-400 transition hover:text-white"
+            className="text-sm text-zinc-400 transition hover:text-white"
           >
             Projects
           </a>
 
           <a
             href="#contact"
-            className="text-zinc-400 transition hover:text-white"
+            className="text-sm text-zinc-400 transition hover:text-white"
           >
             Contact
           </a>
@@ -46,6 +54,7 @@ function Navbar() {
         </div>
 
       </Container>
+
     </header>
   );
 }

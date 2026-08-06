@@ -6,8 +6,6 @@ function Hero() {
   return (
     <section className="relative overflow-hidden bg-zinc-950">
 
-      {/* Background Grid */}
-
       <div
         className="
           absolute
@@ -22,12 +20,12 @@ function Hero() {
         className="
           relative
           flex
-          min-h-[calc(100vh-80px)]
+          min-h-[calc(100vh-64px)]
           flex-col
           items-center
           justify-center
-          gap-16
-          py-20
+          gap-20
+          py-24
           lg:flex-row
         "
       >
