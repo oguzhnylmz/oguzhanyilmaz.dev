@@ -1,5 +1,8 @@
-import Container from "../ui/Container";
 import Button from "../ui/Button";
+import Container from "../ui/Container";
+
+import { navigation } from "../../constants/navigation";
+import { site } from "../../constants/site";
 
 function Navbar() {
   return (
@@ -11,46 +14,40 @@ function Navbar() {
           href="/"
           className="text-xl font-semibold tracking-wide text-white"
         >
-          DevFolio
-          <span className="text-emerald-300">_</span>
+          {site.name}
+
+          <span className="text-emerald-300">
+
+            {site.logoSuffix}
+
+          </span>
+
         </a>
 
         <nav className="hidden items-center gap-10 md:flex">
 
-          <a
-            href="#about"
-            className="text-sm text-zinc-400 transition hover:text-white"
-          >
-            About
-          </a>
+          {navigation.map((item) => (
 
-          <a
-            href="#journey"
-            className="text-sm text-zinc-400 transition hover:text-white"
-          >
-            Journey
-          </a>
+            <a
+              key={item.href}
+              href={item.href}
+              className="text-sm text-zinc-400 transition hover:text-white"
+            >
+              {item.label}
+            </a>
 
-          <a
-            href="#projects"
-            className="text-sm text-zinc-400 transition hover:text-white"
-          >
-            Projects
-          </a>
-
-          <a
-            href="#contact"
-            className="text-sm text-zinc-400 transition hover:text-white"
-          >
-            Contact
-          </a>
+          ))}
 
         </nav>
 
         <div className="hidden md:block">
+
           <Button href="#contact">
+
             Let's Talk
+
           </Button>
+
         </div>
 
       </Container>
