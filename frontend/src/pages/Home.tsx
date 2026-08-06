@@ -1,5 +1,7 @@
 import Navbar from "../components/layout/Navbar";
 import Hero from "../components/hero/Hero";
+import About from "../components/about/About";
+//import Journey from "../components/about/Journey";
 
 function Home() {
   return (
@@ -8,6 +10,10 @@ function Home() {
       <Navbar />
 
       <Hero />
+
+      <About />
+
+      
 
     </main>
   );
