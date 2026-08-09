@@ -1,8 +1,7 @@
 from pydantic import BaseModel
 
 
-class Project(BaseModel):
-    id: int
+class ProjectBase(BaseModel):
     title: str
     description: str
     stack: list[str]
@@ -11,3 +10,11 @@ class Project(BaseModel):
     featured: bool = False
     image: str | None = None
     year: str
+
+
+class ProjectCreate(ProjectBase):
+    pass
+
+
+class Project(ProjectBase):
+    id: int
