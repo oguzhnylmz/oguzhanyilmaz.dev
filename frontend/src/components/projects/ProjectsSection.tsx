@@ -1,126 +1,103 @@
+import { useEffect, useState } from "react";
+
 import Container from "../ui/Container";
 import ProjectCard from "./ProjectCard";
+
+import { getProjects } from "../../services/projectService";
 import type { Project } from "../../types/Project";
 
 function ProjectsSection() {
-  const projects: Project[] = [
-    {
-      id: 1,
-      title: "DevFolio API",
-      description:
-        "A backend-driven portfolio system built with FastAPI, PostgreSQL and React.",
-      stack: ["Python", "FastAPI", "PostgreSQL", "React"],
-      github: "https://github.com/",
-      demo: "#",
-      featured: true,
-      year: "2026",
-    },
-    {
-      id: 2,
-      title: "API Service",
-      description:
-        "A clean REST API focused on structured architecture and maintainable backend code.",
-      stack: ["Python", "FastAPI", "REST API"],
-      github: "https://github.com/",
-      demo: "#",
-      featured: false,
-      year: "2025",
-    },
-    {
-      id: 3,
-      title: "Developer Dashboard",
-      description:
-        "A modern dashboard interface designed to visualize application data and system activity.",
-      stack: ["React", "TypeScript", "Tailwind"],
-      github: "https://github.com/",
-      demo: "#",
-      featured: false,
-      year: "2025",
-    },
-  ];
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
-  const featuredProject = projects.find(
-    (project) => project.featured
-  );
+  useEffect(() => {
+    async function loadProjects() {
+      try {
+        const data = await getProjects();
+        setProjects(data);
+      } catch (err) {
+        console.error("Failed to load projects:", err);
+        setError(true);
+      } finally {
+        setLoading(false);
+      }
+    }
 
-  const otherProjects = projects.filter(
-    (project) => !project.featured
-  );
+    loadProjects();
+  }, []);
 
   return (
-    <section
-      id="projects"
-      className="relative overflow-hidden py-32"
-    >
+    <section id="projects" className="py-24 md:py-32">
       <Container>
 
         {/* Section Header */}
-
         <div className="mb-16 max-w-2xl">
 
-          <span
-            className="
-              text-xs
-              font-medium
-              uppercase
-              tracking-[0.35em]
-              text-emerald-400
-            "
-          >
+          <span className="text-xs font-medium uppercase tracking-[0.35em] text-emerald-400">
             Selected Work
           </span>
 
-          <h2
-            className="
-              mt-4
-              text-4xl
-              font-bold
-              tracking-tight
-              text-white
-              md:text-5xl
-            "
-          >
-            Projects that{" "}
-            <span className="text-zinc-500">
-              solve problems.
-            </span>
+          <h2 className="mt-4 text-4xl font-bold tracking-tight md:text-5xl">
+            Projects that
+            <span className="text-zinc-500"> solve problems.</span>
           </h2>
 
-          <p
-            className="
-              mt-6
-              text-lg
-              leading-8
-              text-zinc-400
-            "
-          >
-            A collection of projects I've built while developing
-            my skills in backend engineering, APIs and modern web
-            development.
+          <p className="mt-6 text-lg leading-8 text-zinc-400">
+            A collection of projects I've built while developing my
+            skills in backend engineering, APIs and modern web development.
           </p>
 
         </div>
 
-        {/* Featured Project */}
-
-        {featuredProject && (
-          <div className="mb-8">
-            <ProjectCard project={featuredProject} />
+        {/* Loading */}
+        {loading && (
+          <div className="rounded-3xl border border-zinc-800 bg-zinc-950/80 p-10 text-sm text-zinc-500">
+            Loading projects...
           </div>
         )}
 
-        {/* Other Projects */}
+        {/* Error */}
+        {error && (
+          <div className="rounded-3xl border border-red-900/50 bg-zinc-950/80 p-10 text-sm text-red-400">
+            Failed to load projects from the API.
+          </div>
+        )}
 
-        <div className="grid gap-8 md:grid-cols-2">
+        {/* Projects */}
+        {!loading && !error && projects.length > 0 && (
+          <>
+            {/* Featured Project */}
+            {projects.find((project) => project.featured) && (
+              <div className="mb-10">
+                <ProjectCard
+                  project={projects.find((project) => project.featured)!}
+                />
+              </div>
+            )}
 
-          {otherProjects.map((project) => (
-            <ProjectCard
-              key={project.id}
-              project={project}
-            />
-          ))}
+            {/* Other Projects */}
+            <div className="grid gap-6 md:grid-cols-2">
 
-        </div>
+              {projects
+                .filter((project) => !project.featured)
+                .map((project) => (
+                  <ProjectCard
+                    key={project.id}
+                    project={project}
+                  />
+                ))}
+
+            </div>
+          </>
+        )}
+
+        {/* Empty State */}
+        {!loading && !error && projects.length === 0 && (
+          <div className="rounded-3xl border border-zinc-800 bg-zinc-950/80 p-10 text-sm text-zinc-500">
+            No projects found.
+          </div>
+        )}
 
       </Container>
     </section>

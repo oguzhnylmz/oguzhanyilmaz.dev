@@ -9,44 +9,75 @@ function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-50 border-b border-zinc-900/80 bg-zinc-950/90 backdrop-blur-xl">
+    <header className="sticky top-0 z-50 border-b border-zinc-900/80 bg-zinc-950/80 backdrop-blur-xl">
       <Container>
         <nav className="flex h-20 items-center justify-between">
           {/* Logo */}
           <a
-            href="#home"
+            href="#top"
             onClick={closeMenu}
-            className="text-xl font-semibold tracking-tight text-white"
+            className="
+              group
+              text-lg
+              font-semibold
+              tracking-tight
+              text-white
+              transition
+              hover:text-emerald-400
+            "
           >
-            DevFolio<span className="text-emerald-400">_</span>
+            DevFolio
+            <span className="text-emerald-400 transition group-hover:text-white">
+              _
+            </span>
           </a>
 
           {/* Desktop Navigation */}
           <div className="hidden items-center gap-8 md:flex">
             <a
               href="#about"
-              className="text-sm text-zinc-400 transition hover:text-white"
+              className="
+                text-sm
+                text-zinc-400
+                transition
+                hover:text-white
+              "
             >
               About
             </a>
 
             <a
               href="#journey"
-              className="text-sm text-zinc-400 transition hover:text-white"
+              className="
+                text-sm
+                text-zinc-400
+                transition
+                hover:text-white
+              "
             >
               Journey
             </a>
 
             <a
               href="#projects"
-              className="text-sm text-zinc-400 transition hover:text-white"
+              className="
+                text-sm
+                text-zinc-400
+                transition
+                hover:text-white
+              "
             >
               Projects
             </a>
 
             <a
               href="#contact"
-              className="text-sm text-zinc-400 transition hover:text-white"
+              className="
+                text-sm
+                text-zinc-400
+                transition
+                hover:text-white
+              "
             >
               Contact
             </a>
@@ -58,16 +89,19 @@ function Navbar() {
             className="
               hidden
               rounded-xl
-              bg-emerald-400
-              px-6
-              py-3
+              border
+              border-emerald-400/20
+              bg-emerald-400/10
+              px-5
+              py-2.5
               text-sm
               font-semibold
-              text-zinc-950
-              transition
-              hover:bg-emerald-300
-              hover:shadow-lg
-              hover:shadow-emerald-400/10
+              text-emerald-400
+              transition-all
+              duration-300
+              hover:border-emerald-400/40
+              hover:bg-emerald-400
+              hover:text-zinc-950
               md:block
             "
           >
@@ -86,12 +120,13 @@ function Navbar() {
               w-10
               items-center
               justify-center
-              rounded-lg
+              rounded-xl
               border
               border-zinc-800
               text-zinc-300
               transition
               hover:border-zinc-700
+              hover:bg-zinc-900
               hover:text-white
               md:hidden
             "
@@ -106,6 +141,7 @@ function Navbar() {
                   w-5
                   bg-current
                   transition
+                  duration-300
                   ${isOpen ? "translate-y-2 rotate-45" : ""}
                 `}
               />
@@ -119,6 +155,7 @@ function Navbar() {
                   w-5
                   bg-current
                   transition
+                  duration-300
                   ${isOpen ? "opacity-0" : ""}
                 `}
               />
@@ -132,6 +169,7 @@ function Navbar() {
                   w-5
                   bg-current
                   transition
+                  duration-300
                   ${isOpen ? "-translate-y-2 -rotate-45" : ""}
                 `}
               />
@@ -158,7 +196,7 @@ function Navbar() {
               href="#about"
               onClick={closeMenu}
               className="
-                rounded-lg
+                rounded-xl
                 px-4
                 py-3
                 text-sm
@@ -175,7 +213,7 @@ function Navbar() {
               href="#journey"
               onClick={closeMenu}
               className="
-                rounded-lg
+                rounded-xl
                 px-4
                 py-3
                 text-sm
@@ -192,7 +230,7 @@ function Navbar() {
               href="#projects"
               onClick={closeMenu}
               className="
-                rounded-lg
+                rounded-xl
                 px-4
                 py-3
                 text-sm
@@ -209,7 +247,7 @@ function Navbar() {
               href="#contact"
               onClick={closeMenu}
               className="
-                rounded-lg
+                rounded-xl
                 px-4
                 py-3
                 text-sm
