@@ -1,78 +1,109 @@
+from sqlalchemy import select
+from sqlalchemy.orm import Session
+
+from app.models.project import ProjectModel
 from app.schemas.project import Project, ProjectCreate
 
 
-projects: list[Project] = [
-    Project(
-        id=1,
-        title="DevFolio",
-        description="Personal portfolio website",
-        stack=["React", "TypeScript", "Tailwind", "FastAPI"],
-        github=None,
-        demo=None,
-        featured=True,
-        image=None,
-        year="2026",
-    ),
-    Project(
-        id=2,
-        title="Hotel Management",
-        description="Hotel reservation system",
-        stack=["Python", "FastAPI", "PostgreSQL"],
-        github=None,
-        demo=None,
-        featured=False,
-        image=None,
-        year="2025",
-    ),
-]
-
-
-def get_all_projects() -> list[Project]:
-    return projects
-
-
-def get_project_by_id(project_id: int) -> Project | None:
-    for project in projects:
-        if project.id == project_id:
-            return project
-
-    return None
-
-
-def create_project(project_data: ProjectCreate) -> Project:
-    next_id = max((project.id for project in projects), default=0) + 1
-
-    new_project = Project(
-        id=next_id,
-        **project_data.model_dump(),
+def project_to_schema(project: ProjectModel) -> Project:
+    return Project(
+        id=project.id,
+        title=project.title,
+        description=project.description,
+        stack=project.stack.split(","),
+        github=project.github,
+        demo=project.demo,
+        featured=project.featured,
+        image=project.image,
+        year=project.year,
+        status=project.status,
     )
 
-    projects.append(new_project)
 
-    return new_project
+def get_all_projects(db: Session) -> list[Project]:
+    result = db.execute(
+        select(ProjectModel).order_by(ProjectModel.id)
+    )
+
+    projects = result.scalars().all()
+
+    return [
+        project_to_schema(project)
+        for project in projects
+    ]
+
+
+def get_project_by_id(
+    db: Session,
+    project_id: int,
+) -> Project | None:
+    project = db.get(ProjectModel, project_id)
+
+    if project is None:
+        return None
+
+    return project_to_schema(project)
+
+
+def create_project(
+    db: Session,
+    project_data: ProjectCreate,
+) -> Project:
+    new_project = ProjectModel(
+        title=project_data.title,
+        description=project_data.description,
+        stack=",".join(project_data.stack),
+        github=project_data.github,
+        demo=project_data.demo,
+        featured=project_data.featured,
+        image=project_data.image,
+        year=project_data.year,
+        status=project_data.status,
+    )
+
+    db.add(new_project)
+    db.commit()
+    db.refresh(new_project)
+
+    return project_to_schema(new_project)
+
 
 def update_project(
+    db: Session,
     project_id: int,
     project_data: ProjectCreate,
 ) -> Project | None:
-    for index, project in enumerate(projects):
-        if project.id == project_id:
-            updated_project = Project(
-                id=project_id,
-                **project_data.model_dump(),
-            )
+    project = db.get(ProjectModel, project_id)
 
-            projects[index] = updated_project
+    if project is None:
+        return None
 
-            return updated_project
+    project.title = project_data.title
+    project.description = project_data.description
+    project.stack = ",".join(project_data.stack)
+    project.github = project_data.github
+    project.demo = project_data.demo
+    project.featured = project_data.featured
+    project.image = project_data.image
+    project.year = project_data.year
+    project.status = project_data.status
 
-    return None
+    db.commit()
+    db.refresh(project)
+
+    return project_to_schema(project)
 
 
-def delete_project(project_id: int) -> bool:
-    for index, project in enumerate(projects):
-        if project.id == project_id:
-            projects.pop(index)
-            return True
+def delete_project(
+    db: Session,
+    project_id: int,
+) -> bool:
+    project = db.get(ProjectModel, project_id)
 
-    return False
+    if project is None:
+        return False
+
+    db.delete(project)
+    db.commit()
+
+    return True

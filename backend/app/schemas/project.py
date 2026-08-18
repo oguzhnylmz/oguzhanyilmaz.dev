@@ -10,6 +10,7 @@ class ProjectBase(BaseModel):
     featured: bool = False
     image: str | None = None
     year: str
+    status: str = "active"
 
 
 class ProjectCreate(ProjectBase):
