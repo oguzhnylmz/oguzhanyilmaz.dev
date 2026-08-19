@@ -3,9 +3,10 @@ export interface Project {
   title: string;
   description: string;
   stack: string[];
-  github?: string;
-  demo?: string;
+  github: string | null;
+  demo: string | null;
   featured: boolean;
-  image?: string;
+  image: string | null;
   year: string;
+  status: string;
 }
