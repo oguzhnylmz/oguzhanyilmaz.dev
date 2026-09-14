@@ -1,5 +1,5 @@
 export const site = {
-  name: "DevFolio",
+  name: "Oğuzhan Yılmaz",
 
   logoSuffix: "_",
 

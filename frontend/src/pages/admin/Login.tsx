@@ -1,9 +1,12 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { login } from "../../services/authService";
 
 function Login() {
+  const navigate = useNavigate();
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
@@ -17,9 +20,10 @@ function Login() {
     setLoading(true);
 
     try {
-      const data = await login(username, password);
+      await login(username, password);
 
-      console.log("Login successful:", data);
+      // Login başarılı → Admin Dashboard
+      navigate("/admin", { replace: true });
     } catch (error) {
       console.error(error);
       setError("Invalid username or password.");
@@ -33,7 +37,7 @@ function Login() {
       <div className="w-full max-w-md">
         <div className="mb-8">
           <p className="mb-2 text-sm font-medium text-zinc-400">
-            DevFolio Admin
+            Oğuzhan Yılmaz • Admin
           </p>
 
           <h1 className="text-3xl font-semibold tracking-tight text-white">
@@ -66,6 +70,7 @@ function Login() {
                 className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3 text-sm text-white outline-none transition focus:border-zinc-400"
                 placeholder="admin"
                 autoComplete="username"
+                required
               />
             </div>
 
@@ -85,6 +90,7 @@ function Login() {
                 className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3 text-sm text-white outline-none transition focus:border-zinc-400"
                 placeholder="••••••••"
                 autoComplete="current-password"
+                required
               />
             </div>
 

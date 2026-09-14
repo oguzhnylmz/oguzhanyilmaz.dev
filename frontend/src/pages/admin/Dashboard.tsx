@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 import {
   getDashboardStats,
@@ -139,8 +140,8 @@ function Dashboard() {
       </div>
 
       {/* Recent Projects */}
-      <div className="mt-8 rounded-2xl border border-zinc-800 bg-zinc-900/60">
-        {/* Recent Projects Header */}
+      <div className="mt-8 overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900/60">
+        {/* Header */}
         <div className="flex items-center justify-between border-b border-zinc-800 p-6">
           <div>
             <h2 className="text-lg font-medium text-white">
@@ -152,12 +153,12 @@ function Dashboard() {
             </p>
           </div>
 
-          <a
-            href="/admin/projects"
+          <Link
+            to="/admin/projects"
             className="text-sm text-zinc-400 transition hover:text-white"
           >
             View all →
-          </a>
+          </Link>
         </div>
 
         {/* Loading */}
@@ -184,8 +185,13 @@ function Dashboard() {
             {projects.map((project) => (
               <div
                 key={project.id}
-                className="flex items-center justify-between gap-4 p-6 transition hover:bg-zinc-900"
+                className="
+                  flex flex-col gap-4 p-6
+                  transition hover:bg-zinc-900
+                  sm:flex-row sm:items-center sm:justify-between
+                "
               >
+                {/* Project Info */}
                 <div className="min-w-0">
                   <p className="truncate font-medium text-white">
                     {project.title}
@@ -196,8 +202,32 @@ function Dashboard() {
                   </p>
                 </div>
 
-                <div className="flex shrink-0 items-center gap-4">
-                  <span className="rounded-full border border-zinc-700 px-3 py-1 text-xs text-zinc-300">
+                {/* Meta */}
+                <div className="flex shrink-0 items-center gap-3">
+                  {project.featured && (
+                    <span
+                      className="
+                        rounded-full
+                        border border-emerald-400/20
+                        bg-emerald-400/5
+                        px-3 py-1
+                        text-xs
+                        text-emerald-400
+                      "
+                    >
+                      Featured
+                    </span>
+                  )}
+
+                  <span
+                    className="
+                      rounded-full
+                      border border-zinc-700
+                      px-3 py-1
+                      text-xs
+                      text-zinc-300
+                    "
+                  >
                     {project.status}
                   </span>
 

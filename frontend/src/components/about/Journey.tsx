@@ -38,7 +38,7 @@ function Journey() {
 
           <JourneyItem
             year="2026"
-            title="Building DevFolio"
+            title="Building My Portfolio"
             description="Creating a full-stack portfolio using React, FastAPI and PostgreSQL."
             last
           />

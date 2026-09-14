@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Container from "../ui/Container";
+import { site } from "../../constants/site";
 
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -26,9 +27,9 @@ function Navbar() {
               hover:text-emerald-400
             "
           >
-            DevFolio
+            {site.name}
             <span className="text-emerald-400 transition group-hover:text-white">
-              _
+              {site.logoSuffix}
             </span>
           </a>
 

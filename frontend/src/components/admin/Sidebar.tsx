@@ -6,7 +6,7 @@ function Sidebar() {
       <div className="flex h-20 items-center border-b border-zinc-800 px-6">
         <div>
           <h1 className="text-lg font-semibold tracking-tight text-white">
-            DevFolio
+            Oğuzhan Yılmaz
           </h1>
 
           <p className="text-xs text-zinc-500">
@@ -46,7 +46,7 @@ function Sidebar() {
 
       <div className="border-t border-zinc-800 p-4">
         <p className="px-4 text-xs text-zinc-600">
-          DevFolio Admin
+          Oğuzhan Yılmaz • Admin
         </p>
       </div>
     </aside>

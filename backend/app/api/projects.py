@@ -1,12 +1,14 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from app.auth.security import get_current_admin
 
+from app.auth.security import get_current_admin
 from app.database import get_db
 from app.schemas.project import Project, ProjectCreate
 from app.services.project_service import (
+    get_active_projects,
     get_all_projects,
     get_project_by_id,
+    get_project_by_slug,
     create_project,
     update_project,
     delete_project,
@@ -15,12 +17,58 @@ from app.services.project_service import (
 router = APIRouter()
 
 
-@router.get("/projects", response_model=list[Project])
-def get_projects(db: Session = Depends(get_db)):
+# =========================
+# PUBLIC
+# =========================
+
+@router.get(
+    "/projects",
+    response_model=list[Project],
+)
+def get_projects(
+    db: Session = Depends(get_db),
+):
+    return get_active_projects(db)
+
+
+@router.get(
+    "/projects/slug/{slug}",
+    response_model=Project,
+)
+def get_project_by_slug_endpoint(
+    slug: str,
+    db: Session = Depends(get_db),
+):
+    project = get_project_by_slug(db, slug)
+
+    if project is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Project not found",
+        )
+
+    return project
+
+
+# =========================
+# ADMIN
+# =========================
+
+@router.get(
+    "/admin/projects",
+    response_model=list[Project],
+)
+def get_admin_projects(
+    db: Session = Depends(get_db),
+    current_admin: str = Depends(get_current_admin),
+):
     return get_all_projects(db)
 
 
-@router.get("/projects/{project_id}", response_model=Project)
+@router.get(
+    "/projects/{project_id}",
+    response_model=Project,
+)
 def get_project(
     project_id: int,
     db: Session = Depends(get_db),
@@ -74,7 +122,9 @@ def update_existing_project(
     return updated_project
 
 
-@router.delete("/projects/{project_id}")
+@router.delete(
+    "/projects/{project_id}",
+)
 def delete_existing_project(
     project_id: int,
     db: Session = Depends(get_db),

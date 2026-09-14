@@ -96,7 +96,7 @@ function HeroCodeCard() {
 
             <span className="text-orange-300">self</span>.current_project =
 
-            <span className="text-emerald-300"> "DevFolio"</span>
+            <span className="text-emerald-300"> "Personal Portfolio"</span>
 
           </div>
 

@@ -1,18 +1,37 @@
+import { useNavigate } from "react-router-dom";
 import type { Project } from "../../types/Project";
+import ProjectPreview from "./ProjectPreview";
 
 interface ProjectCardProps {
   project: Project;
 }
 
 function ProjectCard({ project }: ProjectCardProps) {
+  const navigate = useNavigate();
   const isFeatured = project.featured;
+
+  function handleCardClick() {
+    navigate(`/projects/${project.slug}`);
+  }
+
+  function handleCardKeyDown(event: React.KeyboardEvent<HTMLElement>) {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      handleCardClick();
+    }
+  }
 
   return (
     <article
+      onClick={handleCardClick}
+      onKeyDown={handleCardKeyDown}
+      role="link"
+      tabIndex={0}
       className={`
-        group overflow-hidden rounded-3xl border border-zinc-800
+        group cursor-pointer overflow-hidden rounded-3xl border border-zinc-800
         bg-zinc-950/80 transition-all duration-300
         hover:border-zinc-700 hover:bg-zinc-900/70
+        focus:outline-none focus:ring-2 focus:ring-emerald-400/50
         ${isFeatured ? "min-h-[360px]" : "min-h-[330px]"}
       `}
     >
@@ -85,6 +104,7 @@ function ProjectCard({ project }: ProjectCardProps) {
                 href={project.demo}
                 target="_blank"
                 rel="noreferrer"
+                onClick={(event) => event.stopPropagation()}
                 className="
                   rounded-xl bg-emerald-400 px-5 py-2.5
                   text-xs font-semibold text-zinc-950
@@ -96,18 +116,14 @@ function ProjectCard({ project }: ProjectCardProps) {
                 View Project
               </a>
             ) : (
-              <button
-                type="button"
+              <span
                 className="
-                  rounded-xl bg-emerald-400 px-5 py-2.5
-                  text-xs font-semibold text-zinc-950
-                  transition-all duration-300
-                  hover:-translate-y-0.5
-                  hover:bg-emerald-300
+                  rounded-xl bg-zinc-800 px-5 py-2.5
+                  text-xs font-semibold text-zinc-500
                 "
               >
-                View Project
-              </button>
+                No Demo
+              </span>
             )}
 
             {project.github ? (
@@ -115,6 +131,7 @@ function ProjectCard({ project }: ProjectCardProps) {
                 href={project.github}
                 target="_blank"
                 rel="noreferrer"
+                onClick={(event) => event.stopPropagation()}
                 className="
                   rounded-xl border border-zinc-700
                   px-5 py-2.5 text-xs font-medium text-zinc-200
@@ -125,17 +142,14 @@ function ProjectCard({ project }: ProjectCardProps) {
                 GitHub
               </a>
             ) : (
-              <button
-                type="button"
+              <span
                 className="
-                  rounded-xl border border-zinc-700
-                  px-5 py-2.5 text-xs font-medium text-zinc-200
-                  transition-all duration-300
-                  hover:border-zinc-500 hover:bg-zinc-900
+                  rounded-xl border border-zinc-800
+                  px-5 py-2.5 text-xs font-medium text-zinc-600
                 "
               >
-                GitHub
-              </button>
+                No GitHub
+              </span>
             )}
           </div>
         </div>
@@ -149,90 +163,12 @@ function ProjectCard({ project }: ProjectCardProps) {
             ${isFeatured ? "min-h-[260px]" : "min-h-[210px]"}
           `}
         >
-          {/* Ambient glow */}
-          <div
-            className="
-              pointer-events-none absolute right-0 top-0
-              h-40 w-40 rounded-full
-              bg-emerald-400/10 blur-3xl
-            "
+          <ProjectPreview
+            title={project.title}
+            slug={project.slug}
+            image={project.image}
+            featured={project.featured}
           />
-
-          {/* Browser window */}
-          <div
-            className="
-              absolute inset-5 overflow-hidden rounded-2xl
-              border border-zinc-800 bg-zinc-950
-              shadow-2xl
-              transition-transform duration-500
-              group-hover:-translate-y-1
-            "
-          >
-            {/* Browser header */}
-            <div className="flex h-9 items-center justify-between border-b border-zinc-800 px-3">
-              <div className="flex gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-red-400" />
-                <span className="h-2 w-2 rounded-full bg-yellow-400" />
-                <span className="h-2 w-2 rounded-full bg-emerald-400" />
-              </div>
-
-              <span className="text-[8px] text-zinc-600">
-                {project.title.toLowerCase().replaceAll(" ", "-")}
-              </span>
-
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-            </div>
-
-            {/* Fake interface */}
-            <div className="p-4">
-              <div className="mb-4 flex items-center justify-between">
-                <div className="h-2 w-20 rounded-full bg-zinc-700" />
-
-                <div className="h-2 w-10 rounded-full bg-emerald-400/70" />
-              </div>
-
-              <div className="grid grid-cols-[1fr_70px] gap-3">
-                <div className="rounded-lg border border-zinc-800 bg-zinc-900/70 p-3">
-                  <div className="space-y-2">
-                    <div className="h-2 w-1/2 rounded-full bg-zinc-700" />
-                    <div className="h-2 w-4/5 rounded-full bg-zinc-800" />
-                    <div className="h-2 w-2/3 rounded-full bg-zinc-800" />
-                  </div>
-
-                  <div className="mt-5 flex items-end gap-1.5">
-                    <div className="h-7 w-2 rounded-t bg-zinc-700" />
-                    <div className="h-10 w-2 rounded-t bg-zinc-700" />
-                    <div className="h-6 w-2 rounded-t bg-zinc-700" />
-                    <div className="h-14 w-2 rounded-t bg-emerald-400/70" />
-                    <div className="h-11 w-2 rounded-t bg-emerald-400/80" />
-                    <div className="h-16 w-2 rounded-t bg-emerald-400" />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <div className="h-7 rounded-lg bg-zinc-900" />
-                  <div className="h-7 rounded-lg bg-zinc-900" />
-                  <div className="h-7 rounded-lg bg-zinc-900" />
-                  <div className="h-7 rounded-lg bg-emerald-400/10" />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Featured label */}
-          {isFeatured && (
-            <span
-              className="
-                absolute bottom-7 left-7 rounded-full
-                border border-emerald-400/30
-                bg-zinc-950 px-3 py-1
-                text-[9px] font-medium uppercase
-                tracking-[0.2em] text-emerald-400
-              "
-            >
-              Featured
-            </span>
-          )}
         </div>
       </div>
     </article>

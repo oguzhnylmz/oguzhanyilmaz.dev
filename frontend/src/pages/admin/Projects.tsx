@@ -1,10 +1,27 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
-import { getProjects } from "../../services/projectService";
+import { getAdminProjects } from "../../services/projectService";
 import type { Project } from "../../types/Project";
 
 import ProjectForm from "../../components/admin/ProjectForm";
 import api from "../../services/api";
+
+type StatusFilter =
+  | "all"
+  | "active"
+  | "draft"
+  | "archived";
+
+type FeaturedFilter =
+  | "all"
+  | "featured"
+  | "regular";
+
+type SortOption =
+  | "newest"
+  | "oldest"
+  | "az"
+  | "za";
 
 function Projects() {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -16,25 +33,38 @@ function Projects() {
 
   const [editingProject, setEditingProject] =
     useState<Project | null>(null);
+
   const [deletingProject, setDeletingProject] =
-  useState<Project | null>(null);
+    useState<Project | null>(null);
 
-  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] =
+    useState(false);
 
-  async function loadProjects() {
-    try {
-      setError("");
+  // Filters
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] =
+    useState<StatusFilter>("all");
 
-      const data = await getProjects();
+  const [featuredFilter, setFeaturedFilter] =
+    useState<FeaturedFilter>("all");
 
-      setProjects(data);
-    } catch (error) {
-      console.error(error);
-      setError("Projects could not be loaded.");
-    } finally {
-      setLoading(false);
-    }
+  const [sortOption, setSortOption] =
+    useState<SortOption>("newest");
+
+async function loadProjects() {
+  try {
+    setError("");
+
+    const data = await getAdminProjects();
+
+    setProjects(data);
+  } catch (error) {
+    console.error(error);
+    setError("Projects could not be loaded.");
+  } finally {
+    setLoading(false);
   }
+}
 
   useEffect(() => {
     loadProjects();
@@ -49,26 +79,99 @@ function Projects() {
     setEditingProject(null);
     loadProjects();
   }
+
   async function handleDelete() {
     if (!deletingProject) {
-        return;
+      return;
     }
 
     try {
-        setDeleteLoading(true);
+      setDeleteLoading(true);
 
-        await api.delete(`/projects/${deletingProject.id}`);
+      await api.delete(
+        `/projects/${deletingProject.id}`
+      );
 
-        setDeletingProject(null);
+      setDeletingProject(null);
 
-        await loadProjects();
+      await loadProjects();
     } catch (error) {
-        console.error(error);
-        setError("Project could not be deleted.");
+      console.error(error);
+      setError("Project could not be deleted.");
     } finally {
-        setDeleteLoading(false);
+      setDeleteLoading(false);
     }
-}
+  }
+
+  const filteredProjects = useMemo(() => {
+    const normalizedSearch =
+      search.trim().toLowerCase();
+
+    let result = projects.filter((project) => {
+      // Search
+      const matchesSearch =
+        normalizedSearch === "" ||
+        project.title
+          .toLowerCase()
+          .includes(normalizedSearch) ||
+        project.description
+          .toLowerCase()
+          .includes(normalizedSearch);
+
+      // Status
+      const matchesStatus =
+        statusFilter === "all" ||
+        project.status === statusFilter;
+
+      // Featured
+      const matchesFeatured =
+        featuredFilter === "all" ||
+        (featuredFilter === "featured" &&
+          project.featured) ||
+        (featuredFilter === "regular" &&
+          !project.featured);
+
+      return (
+        matchesSearch &&
+        matchesStatus &&
+        matchesFeatured
+      );
+    });
+
+    result = [...result].sort((a, b) => {
+      switch (sortOption) {
+        case "newest":
+          return (
+            new Date(b.created_at).getTime() -
+            new Date(a.created_at).getTime()
+          );
+
+        case "oldest":
+          return (
+            new Date(a.created_at).getTime() -
+            new Date(b.created_at).getTime()
+          );
+
+        case "az":
+          return a.title.localeCompare(b.title);
+
+        case "za":
+          return b.title.localeCompare(a.title);
+
+        default:
+          return 0;
+      }
+    });
+
+    return result;
+  }, [
+    projects,
+    search,
+    statusFilter,
+    featuredFilter,
+    sortOption,
+  ]);
+
   if (loading) {
     return (
       <div className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-6">
@@ -79,20 +182,10 @@ function Projects() {
     );
   }
 
-  if (error) {
-    return (
-      <div className="rounded-2xl border border-red-900/50 bg-red-950/20 p-6">
-        <p className="text-sm text-red-400">
-          {error}
-        </p>
-      </div>
-    );
-  }
-  
-
   return (
     <>
       <div>
+        {/* Header */}
         <div className="mb-8 flex items-center justify-between">
           <div>
             <p className="text-sm text-zinc-500">
@@ -106,13 +199,173 @@ function Projects() {
 
           <button
             type="button"
-            onClick={() => setShowCreateForm(true)}
+            onClick={() =>
+              setShowCreateForm(true)
+            }
             className="rounded-lg bg-white px-4 py-2.5 text-sm font-medium text-zinc-950 transition hover:bg-zinc-200"
           >
             + Add Project
           </button>
         </div>
 
+        {/* Error */}
+        {error && (
+          <div className="mb-6 rounded-2xl border border-red-900/50 bg-red-950/20 p-4">
+            <p className="text-sm text-red-400">
+              {error}
+            </p>
+          </div>
+        )}
+
+        {/* Filters */}
+        <div className="mb-6 rounded-2xl border border-zinc-800 bg-zinc-900/60 p-5">
+          <div className="grid gap-4 lg:grid-cols-[1fr_180px_180px_180px]">
+            {/* Search */}
+            <div>
+              <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-zinc-500">
+                Search
+              </label>
+
+              <input
+                type="text"
+                value={search}
+                onChange={(event) =>
+                  setSearch(event.target.value)
+                }
+                placeholder="Search projects..."
+                className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-2.5 text-sm text-white outline-none transition placeholder:text-zinc-600 focus:border-zinc-500"
+              />
+            </div>
+
+            {/* Status */}
+            <div>
+              <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-zinc-500">
+                Status
+              </label>
+
+              <select
+                value={statusFilter}
+                onChange={(event) =>
+                  setStatusFilter(
+                    event.target.value as StatusFilter
+                  )
+                }
+                className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-2.5 text-sm text-white outline-none focus:border-zinc-500"
+              >
+                <option value="all">
+                  All statuses
+                </option>
+
+                <option value="active">
+                  Active
+                </option>
+
+                <option value="draft">
+                  Draft
+                </option>
+
+                <option value="archived">
+                  Archived
+                </option>
+              </select>
+            </div>
+
+            {/* Featured */}
+            <div>
+              <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-zinc-500">
+                Featured
+              </label>
+
+              <select
+                value={featuredFilter}
+                onChange={(event) =>
+                  setFeaturedFilter(
+                    event.target.value as FeaturedFilter
+                  )
+                }
+                className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-2.5 text-sm text-white outline-none focus:border-zinc-500"
+              >
+                <option value="all">
+                  All projects
+                </option>
+
+                <option value="featured">
+                  Featured
+                </option>
+
+                <option value="regular">
+                  Regular
+                </option>
+              </select>
+            </div>
+
+            {/* Sort */}
+            <div>
+              <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-zinc-500">
+                Sort
+              </label>
+
+              <select
+                value={sortOption}
+                onChange={(event) =>
+                  setSortOption(
+                    event.target.value as SortOption
+                  )
+                }
+                className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-2.5 text-sm text-white outline-none focus:border-zinc-500"
+              >
+                <option value="newest">
+                  Newest
+                </option>
+
+                <option value="oldest">
+                  Oldest
+                </option>
+
+                <option value="az">
+                  A-Z
+                </option>
+
+                <option value="za">
+                  Z-A
+                </option>
+              </select>
+            </div>
+          </div>
+
+          {/* Results */}
+          <div className="mt-4 flex items-center justify-between">
+            <p className="text-xs text-zinc-600">
+              Showing{" "}
+              <span className="text-zinc-400">
+                {filteredProjects.length}
+              </span>{" "}
+              of{" "}
+              <span className="text-zinc-400">
+                {projects.length}
+              </span>{" "}
+              projects
+            </p>
+
+            {(search ||
+              statusFilter !== "all" ||
+              featuredFilter !== "all") && (
+              <button
+                type="button"
+                onClick={() => {
+                  setSearch("");
+                  setStatusFilter("all");
+                  setFeaturedFilter("all");
+                }}
+                className="text-xs text-zinc-500 transition hover:text-white"
+              >
+                Clear filters
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Projects Table */}
         <div className="overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900/60">
           <div className="overflow-x-auto">
             <table className="w-full text-left">
@@ -130,6 +383,10 @@ function Projects() {
                     Featured
                   </th>
 
+                  <th className="px-6 py-4 text-xs font-medium uppercase tracking-wider text-zinc-500">
+                    Year
+                  </th>
+
                   <th className="px-6 py-4 text-right text-xs font-medium uppercase tracking-wider text-zinc-500">
                     Actions
                   </th>
@@ -137,11 +394,12 @@ function Projects() {
               </thead>
 
               <tbody className="divide-y divide-zinc-800">
-                {projects.map((project) => (
+                {filteredProjects.map((project) => (
                   <tr
                     key={project.id}
                     className="transition hover:bg-zinc-900"
                   >
+                    {/* Project */}
                     <td className="px-6 py-5">
                       <div>
                         <p className="font-medium text-white">
@@ -154,15 +412,28 @@ function Projects() {
                       </div>
                     </td>
 
+                    {/* Status */}
                     <td className="px-6 py-5">
-                      <span className="rounded-full border border-zinc-700 px-3 py-1 text-xs text-zinc-300">
+                      <span
+                        className={`
+                          rounded-full border px-3 py-1 text-xs
+                          ${
+                            project.status === "active"
+                              ? "border-emerald-900/50 text-emerald-400"
+                              : project.status === "draft"
+                                ? "border-yellow-900/50 text-yellow-400"
+                                : "border-zinc-700 text-zinc-400"
+                          }
+                        `}
+                      >
                         {project.status}
                       </span>
                     </td>
 
+                    {/* Featured */}
                     <td className="px-6 py-5">
                       {project.featured ? (
-                        <span className="text-sm text-white">
+                        <span className="text-sm text-emerald-400">
                           Yes
                         </span>
                       ) : (
@@ -172,6 +443,14 @@ function Projects() {
                       )}
                     </td>
 
+                    {/* Year */}
+                    <td className="px-6 py-5">
+                      <span className="text-sm text-zinc-500">
+                        {project.year}
+                      </span>
+                    </td>
+
+                    {/* Actions */}
                     <td className="px-6 py-5 text-right">
                       <button
                         type="button"
@@ -185,11 +464,13 @@ function Projects() {
 
                       <button
                         type="button"
-                        onClick={() => setDeletingProject(project)}
+                        onClick={() =>
+                          setDeletingProject(project)
+                        }
                         className="ml-4 text-sm text-red-400 transition hover:text-red-300"
-                        >
+                      >
                         Delete
-                        </button>
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -198,10 +479,13 @@ function Projects() {
           </div>
         </div>
 
-        {projects.length === 0 && (
+        {/* Empty filtered state */}
+        {filteredProjects.length === 0 && (
           <div className="mt-4 rounded-2xl border border-zinc-800 p-8 text-center">
             <p className="text-sm text-zinc-500">
-              No projects found.
+              {projects.length === 0
+                ? "No projects found."
+                : "No projects match your filters."}
             </p>
           </div>
         )}
@@ -212,7 +496,9 @@ function Projects() {
         <div className="fixed inset-0 z-50">
           <div
             className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-            onClick={() => setShowCreateForm(false)}
+            onClick={() =>
+              setShowCreateForm(false)
+            }
           />
 
           <div className="absolute inset-y-0 right-0 flex w-full max-w-xl flex-col border-l border-zinc-800 bg-zinc-950 shadow-2xl">
@@ -295,63 +581,68 @@ function Projects() {
           </div>
         </div>
       )}
-            {/* DELETE MODAL */}
-        {deletingProject && (
+
+      {/* DELETE MODAL */}
+      {deletingProject && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
-            <div
+          <div
             className="absolute inset-0 bg-black/70 backdrop-blur-sm"
             onClick={() => {
-                if (!deleteLoading) {
+              if (!deleteLoading) {
                 setDeletingProject(null);
-                }
+              }
             }}
-            />
+          />
 
-            <div className="relative w-full max-w-md rounded-2xl border border-zinc-800 bg-zinc-950 p-6 shadow-2xl">
+          <div className="relative w-full max-w-md rounded-2xl border border-zinc-800 bg-zinc-950 p-6 shadow-2xl">
             <div>
-                <p className="text-xs uppercase tracking-wider text-red-400">
+              <p className="text-xs uppercase tracking-wider text-red-400">
                 Delete project
-                </p>
+              </p>
 
-                <h2 className="mt-2 text-xl font-semibold text-white">
+              <h2 className="mt-2 text-xl font-semibold text-white">
                 Are you sure?
-                </h2>
+              </h2>
 
-                <p className="mt-3 text-sm leading-6 text-zinc-500">
+              <p className="mt-3 text-sm leading-6 text-zinc-500">
                 You are about to delete{" "}
                 <span className="font-medium text-zinc-300">
-                    {deletingProject.title}
+                  {deletingProject.title}
                 </span>
                 .
-                </p>
+              </p>
 
-                <p className="mt-2 text-sm text-zinc-600">
+              <p className="mt-2 text-sm text-zinc-600">
                 This action cannot be undone.
-                </p>
+              </p>
             </div>
 
             <div className="mt-6 flex justify-end gap-3">
-                <button
+              <button
                 type="button"
                 disabled={deleteLoading}
-                onClick={() => setDeletingProject(null)}
+                onClick={() =>
+                  setDeletingProject(null)
+                }
                 className="rounded-lg border border-zinc-700 px-4 py-2.5 text-sm text-zinc-300 transition hover:bg-zinc-900 disabled:cursor-not-allowed disabled:opacity-50"
-                >
+              >
                 Cancel
-                </button>
+              </button>
 
-                <button
+              <button
                 type="button"
                 disabled={deleteLoading}
                 onClick={handleDelete}
                 className="rounded-lg bg-red-500 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-red-400 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                {deleteLoading ? "Deleting..." : "Delete Project"}
-                </button>
+              >
+                {deleteLoading
+                  ? "Deleting..."
+                  : "Delete Project"}
+              </button>
             </div>
-            </div>
+          </div>
         </div>
-        )}
+      )}
     </>
   );
 }

@@ -1,4 +1,6 @@
-from sqlalchemy import Boolean, Integer, String, Text
+from datetime import datetime
+
+from sqlalchemy import Boolean, DateTime, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database import Base
@@ -16,6 +18,12 @@ class ProjectModel(Base):
     title: Mapped[str] = mapped_column(
         String(150),
         nullable=False,
+    )
+    slug: Mapped[str] = mapped_column(
+        String(180),
+        nullable=False,
+        unique=True,
+        index=True,
     )
 
     description: Mapped[str] = mapped_column(
@@ -55,8 +63,21 @@ class ProjectModel(Base):
     )
 
     status: Mapped[str] = mapped_column(
-    String(30),
-    nullable=False,
-    default="active",
-    server_default="active",
+        String(30),
+        nullable=False,
+        default="active",
+        server_default="active",
+    )
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime,
+        nullable=False,
+        default=datetime.utcnow,
+    )
+
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime,
+        nullable=False,
+        default=datetime.utcnow,
+        onupdate=datetime.utcnow,
     )

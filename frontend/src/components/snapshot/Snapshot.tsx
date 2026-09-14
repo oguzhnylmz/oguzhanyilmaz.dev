@@ -19,7 +19,7 @@ function Snapshot() {
 
           <SnapshotCard
             title="Current Project"
-            value="DevFolio"
+            value="Personal Portfolio"
           />
 
           <SnapshotCard
