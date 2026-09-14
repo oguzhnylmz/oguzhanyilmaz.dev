@@ -75,8 +75,18 @@ function ProjectCard({ project }: ProjectCardProps) {
               </span>
             </div>
 
+            {/* Description */}
             <p className="mt-4 max-w-xl text-sm leading-7 text-zinc-400">
-              {project.description}
+              {project.description.length > 200 ? (
+                <>
+                  {project.description.slice(0, 200).trimEnd()}...
+                  <span className="ml-1 text-emerald-400 transition-colors group-hover:text-emerald-300">
+                    Read more →
+                  </span>
+                </>
+              ) : (
+                project.description
+              )}
             </p>
           </div>
 
