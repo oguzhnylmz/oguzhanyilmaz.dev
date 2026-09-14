@@ -17,22 +17,38 @@ function ProjectsSection() {
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    async function loadProjects() {
+  async function loadProjects() {
+    const maxAttempts = 3;
+
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
       try {
         const data = await getProjects();
 
         setProjects(data);
-      } catch (err) {
-        console.error("Failed to load projects:", err);
-        setError(true);
-      } finally {
         setLoading(false);
+        return;
+      } catch (err) {
+        console.error(
+          `Failed to load projects (attempt ${attempt}/${maxAttempts}):`,
+          err
+        );
+
+        if (attempt < maxAttempts) {
+          const delay = attempt * 3000;
+
+          await new Promise((resolve) =>
+            setTimeout(resolve, delay)
+          );
+        }
       }
     }
 
-    loadProjects();
-  }, []);
+    setError(true);
+    setLoading(false);
+  }
 
+  loadProjects();
+}, []);
   /*
    * Featured project is always shown first.
    * Remaining projects follow after it.
