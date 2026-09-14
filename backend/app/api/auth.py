@@ -1,8 +1,10 @@
 import os
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, Request, status
 from pydantic import BaseModel
 from dotenv import load_dotenv
+from slowapi import Limiter
+from slowapi.util import get_remote_address
 
 from app.auth.security import (
     create_access_token,
@@ -17,6 +19,10 @@ router = APIRouter(
     tags=["Auth"],
 )
 
+limiter = Limiter(
+    key_func=get_remote_address,
+)
+
 
 class LoginRequest(BaseModel):
     username: str
@@ -24,7 +30,11 @@ class LoginRequest(BaseModel):
 
 
 @router.post("/login")
-def login(credentials: LoginRequest):
+@limiter.limit("5/minute")
+def login(
+    request: Request,
+    credentials: LoginRequest,
+):
     admin_username = os.getenv("ADMIN_USERNAME")
     admin_password_hash = os.getenv("ADMIN_PASSWORD_HASH")
 

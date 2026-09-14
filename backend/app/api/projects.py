@@ -1,8 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 
 from app.auth.security import get_current_admin
 from app.database import get_db
+from app.rate_limit import limiter
 from app.schemas.project import Project, ProjectCreate
 from app.services.project_service import (
     get_active_projects,
@@ -13,6 +14,7 @@ from app.services.project_service import (
     update_project,
     delete_project,
 )
+
 
 router = APIRouter()
 
@@ -25,7 +27,9 @@ router = APIRouter()
     "/projects",
     response_model=list[Project],
 )
+@limiter.limit("60/minute")
 def get_projects(
+    request: Request,
     db: Session = Depends(get_db),
 ):
     return get_active_projects(db)
@@ -35,11 +39,34 @@ def get_projects(
     "/projects/slug/{slug}",
     response_model=Project,
 )
+@limiter.limit("60/minute")
 def get_project_by_slug_endpoint(
+    request: Request,
     slug: str,
     db: Session = Depends(get_db),
 ):
     project = get_project_by_slug(db, slug)
+
+    if project is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Project not found",
+        )
+
+    return project
+
+
+@router.get(
+    "/projects/{project_id}",
+    response_model=Project,
+)
+@limiter.limit("60/minute")
+def get_project(
+    request: Request,
+    project_id: int,
+    db: Session = Depends(get_db),
+):
+    project = get_project_by_id(db, project_id)
 
     if project is None:
         raise HTTPException(
@@ -58,30 +85,13 @@ def get_project_by_slug_endpoint(
     "/admin/projects",
     response_model=list[Project],
 )
+@limiter.limit("30/minute")
 def get_admin_projects(
+    request: Request,
     db: Session = Depends(get_db),
     current_admin: str = Depends(get_current_admin),
 ):
     return get_all_projects(db)
-
-
-@router.get(
-    "/projects/{project_id}",
-    response_model=Project,
-)
-def get_project(
-    project_id: int,
-    db: Session = Depends(get_db),
-):
-    project = get_project_by_id(db, project_id)
-
-    if project is None:
-        raise HTTPException(
-            status_code=404,
-            detail="Project not found",
-        )
-
-    return project
 
 
 @router.post(
@@ -89,7 +99,9 @@ def get_project(
     response_model=Project,
     status_code=201,
 )
+@limiter.limit("30/minute")
 def create_new_project(
+    request: Request,
     project: ProjectCreate,
     db: Session = Depends(get_db),
     current_admin: str = Depends(get_current_admin),
@@ -101,7 +113,9 @@ def create_new_project(
     "/projects/{project_id}",
     response_model=Project,
 )
+@limiter.limit("30/minute")
 def update_existing_project(
+    request: Request,
     project_id: int,
     project: ProjectCreate,
     db: Session = Depends(get_db),
@@ -125,7 +139,9 @@ def update_existing_project(
 @router.delete(
     "/projects/{project_id}",
 )
+@limiter.limit("30/minute")
 def delete_existing_project(
+    request: Request,
     project_id: int,
     db: Session = Depends(get_db),
     current_admin: str = Depends(get_current_admin),
