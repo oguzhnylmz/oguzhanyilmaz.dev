@@ -23,13 +23,13 @@ function Snapshot() {
           />
 
           <SnapshotCard
-            title="Favourite Stack"
+            title="Primary Stack"
             value="Python + FastAPI"
           />
 
           <SnapshotCard
             title="Currently Learning"
-            value="React & Docker"
+            value="React, Docker & System Design"
           />
 
           <SnapshotCard

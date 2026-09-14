@@ -1,7 +1,7 @@
 export const socials = {
-  github: "https://github.com/",
+  github: "https://github.com/oguzhnylmz/",
 
-  linkedin: "https://linkedin.com/",
+  linkedin: "https://www.linkedin.com/in/oguzhan-yılmaz/",
 
-  email: "yourmail@example.com",
+  email: "oguzhnylmz211@gmail.com",
 };

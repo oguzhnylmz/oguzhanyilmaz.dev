@@ -13,7 +13,7 @@ function About() {
         <SectionTitle
           eyebrow="About"
           title="Building software with purpose."
-          description="I enjoy creating reliable software that solves real problems. My focus is backend engineering, but I believe understanding the entire product is what makes a better developer."
+          description="I enjoy building reliable software that solves real problems. I’m currently focused on backend engineering while continuing to strengthen my skills across the full development process."
         />
 
         <div className="mt-16 grid gap-6 md:grid-cols-3">
@@ -27,13 +27,13 @@ function About() {
           <AboutCard
             icon="⚙"
             title="Backend Focused"
-            description="Python, FastAPI and API design are my strongest areas. Clean architecture is always my priority."
+            description="Python, FastAPI and API design are at the core of my current learning and development. I care about clean architecture and maintainable code."
           />
 
           <AboutCard
             icon="📚"
             title="Always Learning"
-            description="I'm constantly improving my frontend knowledge while learning Docker, PostgreSQL and System Design."
+            description="I’m continuously expanding my skills across frontend and backend development, with a growing focus on Docker, system design and modern software practices."
           />
 
         </div>

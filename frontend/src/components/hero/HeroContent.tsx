@@ -27,9 +27,9 @@ function HeroContent() {
 
       <p className="mt-8 max-w-xl text-lg leading-8 text-zinc-400">
 
-        I build scalable backend systems and modern web
-        applications with a strong focus on clean architecture,
-        maintainability and performance.
+        I’m focused on building modern web 
+        applications while strengthening my backend skills 
+        through hands-on projects and continuous learning.
 
       </p>
 

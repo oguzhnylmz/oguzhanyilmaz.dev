@@ -80,7 +80,7 @@ function HeroCodeCard() {
 
             <span className="text-orange-300">self</span>.role =
 
-            <span className="text-emerald-300"> "Backend Engineer"</span>
+            <span className="text-emerald-300"> "Software Developer"</span>
 
           </div>
 

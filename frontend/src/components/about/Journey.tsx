@@ -19,27 +19,27 @@ function Journey() {
         <div className="mx-auto mt-20 max-w-3xl">
 
           <JourneyItem
-            year="2022"
+            year="2020"
             title="Computer Engineering"
-            description="Built a solid foundation in software engineering, algorithms and computer science."
+            description="Graduated with a degree in Computer Engineering, building a strong foundation in software engineering, algorithms and computer science."
           />
 
           <JourneyItem
-            year="2024"
-            title="Backend Development"
-            description="Focused on Python, FastAPI, REST APIs and clean software architecture."
+            year="2021"
+            title="First Professional Experience"
+            description="Gained initial professional experience and developed practical skills through real-world work environments."
           />
 
           <JourneyItem
-            year="2025"
-            title="Professional Experience"
-            description="Worked on real-world software projects while improving collaboration and engineering practices."
+            year="2022–2025"
+            title="Exploring & Growing"
+            description="Explored different professional paths while gaining valuable work and life experience, and gradually clarified the direction I wanted to pursue long-term."
           />
 
           <JourneyItem
             year="2026"
-            title="Building My Portfolio"
-            description="Creating a full-stack portfolio using React, FastAPI and PostgreSQL."
+            title="Back to Software Engineering"
+            description="Returned to software development with renewed focus, building full-stack projects and strengthening my backend engineering skills."
             last
           />
 
